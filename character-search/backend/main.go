@@ -1,106 +1,3 @@
-// package main
-
-// import (
-// 	"context"
-// 	"encoding/json"
-// 	"fmt"
-// 	"log"
-// 	"net/http"
-
-// 	"github.com/gorilla/handlers"
-// 	"github.com/gorilla/mux"
-
-// 	// "os"
-// 	"time"
-
-// 	"go.mongodb.org/mongo-driver/bson"
-// 	"go.mongodb.org/mongo-driver/mongo"
-// 	"go.mongodb.org/mongo-driver/mongo/options"
-// )
-
-// var mongoClient *mongo.Client
-
-// func connectToMongoDB() {
-// 	// Create a context with a timeout for the connection attempt
-// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-// 	defer cancel()
-
-// 	// Connect to MongoDB using the updated mongo.Connect method
-// 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-// 	if err != nil {
-// 		log.Fatalf("Failed to connect to MongoDB: %v", err)
-// 	}
-
-// 	// Ping the database to ensure the connection is successful
-// 	if err := client.Ping(ctx, nil); err != nil {
-// 		log.Fatalf("Failed to ping MongoDB: %v", err)
-// 	}
-
-// 	// Assign the client to the global variable
-// 	mongoClient = client
-// 	log.Println("Successfully connected to MongoDB")
-// }
-
-// // func connectToMongoDB() {
-// // 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
-// // 	if err != nil {
-// // 		log.Fatal(err)
-// // 	}
-// // 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-// // 	defer cancel()
-// // 	err = client.Connect(ctx)
-// // 	if err != nil {
-// // 		log.Fatal(err)
-// // 	}
-// // 	mongoClient = client
-// // }
-
-// func searchCharacters(w http.ResponseWriter, r *http.Request) {
-// 	name := r.URL.Query().Get("name")
-// 	if name == "" {
-// 		http.Error(w, "Missing 'name' query parameter", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	collection := mongoClient.Database("rickandmorty").Collection("characters")
-// 	filter := bson.M{"name": bson.M{"$regex": name, "$options": "i"}}
-
-// 	var results []bson.M
-// 	cursor, err := collection.Find(context.Background(), filter)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	defer cursor.Close(context.Background())
-
-// 	if err = cursor.All(context.Background(), &results); err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(results)
-// 	fmt.Fprintf(w, `{"message": "Search results for %s"}`, name)
-// }
-
-// func main() {
-// 	connectToMongoDB()
-// 	// http.HandleFunc("/search", searchCharacters)
-// 	r := mux.NewRouter()
-
-// 	// Define your search handler
-// 	r.HandleFunc("/search", searchCharacters).Methods("GET")
-
-// 	// Enable CORS middleware for the router
-// 	// Here, we are allowing requests from http://localhost:3000 (React app)
-// 	http.ListenAndServe(":8080", handlers.CORS(
-// 		handlers.AllowedOrigins([]string{"http://localhost:3000"}),        // Allow the React frontend origin
-// 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}), // Allow specific HTTP methods
-// 	)(r))
-// 	// log.Println("Server is running on port 8080...")
-// 	// log.Fatal(http.ListenAndServe(":8080", nil))
-// }
-
 package main
 
 import (
@@ -199,24 +96,7 @@ func fetchAndInsertCharacters() {
 		return
 	}
 
-	// // Insert the characters into MongoDB
-	// collection := mongoClient.Database("rickandmorty").Collection("characters")
-	// _, err = collection.InsertMany(context.Background(), toBson(result.Results))
-	// if err != nil {
-	// 	log.Fatalf("Failed to insert data into MongoDB: %v", err)
-	// 	return
-	// }
-
 	log.Printf("Successfully inserted %d characters into MongoDB", len(result.Results))
-}
-
-// Helper function to convert a slice of Character structs to a slice of BSON objects
-func toBson(characters []Character) []interface{} {
-	var bsonData []interface{}
-	for _, c := range characters {
-		bsonData = append(bsonData, c)
-	}
-	return bsonData
 }
 
 // searchCharacters handles the search request to search for characters by name
@@ -245,7 +125,6 @@ func searchCharacters(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(results)
-	// fmt.Fprintf(w, `{"message": "Search results for %s"}`, name)
 }
 
 func main() {

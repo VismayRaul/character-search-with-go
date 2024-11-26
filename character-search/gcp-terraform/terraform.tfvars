@@ -1,0 +1,5 @@
+project_id       = "summer-prism-442813-a1"
+credentials_file = "G:/vismay/Job/Assignment_task/Lawsikho/gcp-service-account.json"
+region           = "us-central1"
+zone             = "us-central1-a"
+machine_type     = "e2-medium"
